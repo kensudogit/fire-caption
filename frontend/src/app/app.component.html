@@ -1,0 +1,62 @@
+<mat-toolbar color="primary" class="toolbar">
+  <button mat-icon-button (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="toolbar-title">{{ title }}</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button [matMenuTriggerFor]="userMenu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item>
+      <mat-icon>person</mat-icon>
+      <span>Profile</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>settings</mat-icon>
+      <span>Settings</span>
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/emergency-calls" routerLinkActive="active">
+        <mat-icon>emergency</mat-icon>
+        <span>Emergency Calls</span>
+        <mat-icon matBadge="3" matBadgeColor="warn" class="badge-icon">notifications</mat-icon>
+      </a>
+      <a mat-list-item routerLink="/fire-stations" routerLinkActive="active">
+        <mat-icon>location_on</mat-icon>
+        <span>Fire Stations</span>
+      </a>
+      <a mat-list-item routerLink="/firefighters" routerLinkActive="active">
+        <mat-icon>people</mat-icon>
+        <span>Firefighters</span>
+      </a>
+      <a mat-list-item routerLink="/equipment" routerLinkActive="active">
+        <mat-icon>build</mat-icon>
+        <span>Equipment</span>
+      </a>
+      <a mat-list-item routerLink="/map" routerLinkActive="active">
+        <mat-icon>map</mat-icon>
+        <span>Map View</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

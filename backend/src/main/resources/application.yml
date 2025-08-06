@@ -1,0 +1,153 @@
+spring:
+  application:
+    name: fire-captain-system
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fire_captain_db
+    username: fire_captain_user
+    password: fire_captain_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      leak-detection-threshold: 30000
+      connection-test-query: SELECT 1
+      validation-timeout: 5000
+      register-mbeans: true
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        jdbc:
+          batch_size: 100
+          batch_versioned_data: true
+          batch.builder: legacy
+        order_inserts: true
+        order_updates: true
+        connection:
+          provider_disables_autocommit: true
+        cache:
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+        jcache:
+          provider: org.ehcache.jsr107.EhcacheCachingProvider
+          uri: classpath:ehcache.xml
+        statistics:
+          enabled: true
+          generate_statistics: true
+        generate_statistics: true
+  
+  cache:
+    type: jcache
+    jcache:
+      config: classpath:ehcache.xml
+  
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+        max-wait: 1000ms
+  
+  security:
+    jwt:
+      secret: fire_captain_jwt_secret_key_2024_very_long_and_secure_key_for_production
+      expiration: 86400000 # 24 hours
+  
+  websocket:
+    allowed-origins: "http://localhost:4200"
+
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+    min-response-size: 512
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 10
+    max-connections: 8192
+    accept-count: 100
+    connection-timeout: 20000
+    max-http-form-post-size: 2MB
+    max-swallow-size: 2MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,configprops
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: fire-captain-system
+      environment: production
+
+logging:
+  level:
+    com.firecaptain: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.cache: DEBUG
+    org.springframework.data.redis: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Performance tuning
+spring:
+  task:
+    execution:
+      pool:
+        core-size: 16
+        max-size: 32
+        queue-capacity: 200
+        keep-alive: 120s
+        allow-core-thread-timeout: true
+      thread-name-prefix: fire-captain-async-
+  
+  # Async configuration
+  async:
+    core-pool-size: 16
+    max-pool-size: 32
+    queue-capacity: 200
+    keep-alive-seconds: 120
+    thread-name-prefix: fire-captain-async-
+
+# Custom performance settings
+fire-captain:
+  performance:
+    cache:
+      ttl: 300 # 5 minutes
+      max-size: 10000
+    batch:
+      size: 100
+      timeout: 30s
+    async:
+      enabled: true
+      pool-size: 16
+    monitoring:
+      enabled: true
+      metrics-interval: 60s

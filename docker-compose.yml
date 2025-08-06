@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: fire-captain-postgres
+    environment:
+      POSTGRES_DB: fire_captain_db
+      POSTGRES_USER: fire_captain_user
+      POSTGRES_PASSWORD: fire_captain_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - fire-captain-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fire_captain_user -d fire_captain_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fire-captain-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fire_captain_db
+      SPRING_DATASOURCE_USERNAME: fire_captain_user
+      SPRING_DATASOURCE_PASSWORD: fire_captain_password
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fire-captain-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fire-captain-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - fire-captain-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:alpine
+    container_name: fire-captain-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - fire-captain-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+
+networks:
+  fire-captain-network:
+    driver: bridge

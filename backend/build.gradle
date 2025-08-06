@@ -1,0 +1,239 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.sonarqube' version '4.4.1.3373'
+    id 'jacoco' version '0.8.11'
+    id 'checkstyle' version '10.12.5'
+    id 'com.github.spotbugs' version '5.2.1'
+    id 'org.flywaydb' version '10.8.1'
+    id 'com.github.ben-manes.versions' version '0.50.0'
+}
+
+group = 'com.firecaptain'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    testCompileOnly {
+        extendsFrom testAnnotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+}
+
+ext {
+    mapstructVersion = '1.5.5.Final'
+    lombokVersion = '1.18.30'
+    jjwtVersion = '0.12.3'
+    postgresqlVersion = '42.7.1'
+    ehcacheVersion = '3.10.8'
+    testcontainersVersion = '1.19.3'
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    
+    // Database
+    implementation "org.postgresql:postgresql:${postgresqlVersion}"
+    implementation 'org.flywaydb:flyway-core'
+    
+    // Cache
+    implementation "org.ehcache:ehcache:${ehcacheVersion}"
+    implementation 'javax.cache:cache-api'
+    
+    // JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+    
+    // Mapping
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    
+    // Utilities
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    // Monitoring
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'com.h2database:h2'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+// MapStruct configuration
+compileJava {
+    options.compilerArgs = [
+        '-Amapstruct.defaultComponentModel=spring',
+        '-Amapstruct.verbose=true'
+    ]
+}
+
+// Checkstyle configuration
+checkstyle {
+    toolVersion = '10.12.5'
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    configProperties = [
+        'baseDir': "${rootDir}"
+    ]
+}
+
+// SpotBugs configuration
+spotbugs {
+    effort = 'max'
+    reportLevel = 'medium'
+    excludeFilter = file("${rootDir}/config/spotbugs/exclude.xml")
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+}
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = '0.8.11'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.70
+            }
+        }
+    }
+}
+
+// SonarQube configuration
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'fire-captain-backend'
+        property 'sonar.projectName', 'Fire Captain Backend'
+        property 'sonar.host.url', 'http://localhost:9000'
+        property 'sonar.java.source', '17'
+        property 'sonar.coverage.jacoco.xmlReportPaths', "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+    }
+}
+
+// Flyway configuration
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/fire_captain_db'
+    user = 'fire_captain_user'
+    password = 'fire_captain_password'
+    locations = ['classpath:db/migration']
+    baselineOnMigrate = true
+}
+
+// Version catalog for dependency management
+dependencyLocking {
+    lockAllConfigurations()
+}
+
+// Custom tasks
+task printVersion {
+    doLast {
+        println "Fire Captain Backend Version: ${version}"
+        println "Java Version: ${System.getProperty('java.version')}"
+        println "Gradle Version: ${gradle.gradleVersion}"
+    }
+}
+
+task generateApiDocs(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.firecaptain.OpenApiGenerator'
+    args = ['--output', "${buildDir}/docs/api"]
+}
+
+// Build optimization
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters']
+}
+
+tasks.withType(Test) {
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 100
+}
+
+// Docker build task
+task dockerBuild(type: Exec) {
+    dependsOn bootJar
+    commandLine 'docker', 'build', '-t', "fire-captain-backend:${version}", '.'
+}
+
+// Performance monitoring
+tasks.withType(JavaExec) {
+    jvmArgs += [
+        '-XX:+UseG1GC',
+        '-XX:MaxGCPauseMillis=200',
+        '-Xms1g',
+        '-Xmx4g',
+        '-XX:MaxMetaspaceSize=1g'
+    ]
+}

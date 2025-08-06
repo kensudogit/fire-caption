@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.ehcache.org/v3"
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107">
+
+    <!-- Default cache configuration -->
+    <cache alias="default">
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">30</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">50</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Emergency Reports cache -->
+    <cache alias="emergencyReports">
+        <resources>
+            <heap unit="entries">5000</heap>
+            <offheap unit="MB">200</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">15</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">100</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Dispatches cache -->
+    <cache alias="dispatches">
+        <resources>
+            <heap unit="entries">3000</heap>
+            <offheap unit="MB">150</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">80</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Scene Supports cache -->
+    <cache alias="sceneSupports">
+        <resources>
+            <heap unit="entries">2000</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">20</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">60</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Data Analyses cache -->
+    <cache alias="dataAnalyses">
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">50</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="hours">2</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">200</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Statistics cache -->
+    <cache alias="statistics">
+        <resources>
+            <heap unit="entries">100</heap>
+            <offheap unit="MB">20</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">5</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">10</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- User sessions cache -->
+    <cache alias="userSessions">
+        <resources>
+            <heap unit="entries">10000</heap>
+            <offheap unit="MB">500</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="hours">1</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">5</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Real-time updates cache -->
+    <cache alias="realTimeUpdates">
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">50</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="seconds">30</ttl>
+        </expiry>
+        <heap-store-settings>
+            <max-object-size unit="KB">20</max-object-size>
+        </heap-store-settings>
+    </cache>
+
+    <!-- Hibernate second-level cache regions -->
+    <cache alias="org.hibernate.cache.spi.UpdateTimestampsCache">
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">60</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="org.hibernate.cache.internal.StandardQueryCache">
+        <resources>
+            <heap unit="entries">2000</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">30</ttl>
+        </expiry>
+    </cache>
+
+    <!-- Entity caches -->
+    <cache alias="com.firecaptain.entity.EmergencyReport">
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">50</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">15</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="com.firecaptain.entity.Dispatch">
+        <resources>
+            <heap unit="entries">500</heap>
+            <offheap unit="MB">25</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="com.firecaptain.entity.SceneSupport">
+        <resources>
+            <heap unit="entries">300</heap>
+            <offheap unit="MB">15</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="minutes">20</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="com.firecaptain.entity.DataAnalysis">
+        <resources>
+            <heap unit="entries">200</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+        <expiry>
+            <ttl unit="hours">1</ttl>
+        </expiry>
+    </cache>
+
+    <!-- JSR-107 integration -->
+    <service>
+        <jsr107:defaults enable-management="true" enable-statistics="true">
+            <jsr107:cache name="emergencyReports" template="emergencyReports"/>
+            <jsr107:cache name="dispatches" template="dispatches"/>
+            <jsr107:cache name="sceneSupports" template="sceneSupports"/>
+            <jsr107:cache name="dataAnalyses" template="dataAnalyses"/>
+            <jsr107:cache name="statistics" template="statistics"/>
+            <jsr107:cache name="userSessions" template="userSessions"/>
+            <jsr107:cache name="realTimeUpdates" template="realTimeUpdates"/>
+        </jsr107:defaults>
+    </service>
+
+</config>

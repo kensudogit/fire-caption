@@ -1,0 +1,12 @@
+rootProject.name = 'fire-captain-backend'
+
+// サブプロジェクトの設定
+include 'fire-captain-api'
+include 'fire-captain-core'
+include 'fire-captain-security'
+include 'fire-captain-websocket'
+
+// プロジェクトの説明
+gradle.beforeProject { project ->
+    project.description = "Fire Captain System - ${project.name}"
+}
