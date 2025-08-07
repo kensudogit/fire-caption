@@ -1,16 +1,26 @@
+# 消防司令システムのDocker Compose設定ファイル
+# 
+# このファイルは消防司令システムの全コンポーネント（データベース、バックエンド、フロントエンド、Nginx）
+# をDockerコンテナとして起動するための設定を定義します。
+# 
+# @author FireCaptain Team
+# @version 1.0
+
 services:
+  # PostgreSQLデータベースサービス
+  # 消防司令システムのデータを永続化するためのリレーショナルデータベース
   postgres:
     image: postgres:14
     container_name: fire-captain-postgres
     environment:
-      POSTGRES_DB: fire_captain_db
-      POSTGRES_USER: fire_captain_user
-      POSTGRES_PASSWORD: fire_captain_password
+      POSTGRES_DB: fire_captain_db        # データベース名
+      POSTGRES_USER: fire_captain_user    # データベースユーザー名
+      POSTGRES_PASSWORD: fire_captain_password  # データベースパスワード
     ports:
-      - "5432:5432"
+      - "5432:5432"  # ホストの5432ポートをコンテナの5432ポートにマッピング
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data  # データの永続化
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # 初期化SQLスクリプト
     networks:
       - fire-captain-network
     healthcheck:
@@ -19,21 +29,23 @@ services:
       timeout: 10s
       retries: 3
 
+  # Spring Bootバックエンドサービス
+  # 消防司令システムのビジネスロジックとRESTful APIを提供
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: fire-captain-backend
     ports:
-      - "8080:8080"
+      - "8080:8080"  # ホストの8080ポートをコンテナの8080ポートにマッピング
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fire_captain_db
       SPRING_DATASOURCE_USERNAME: fire_captain_user
       SPRING_DATASOURCE_PASSWORD: fire_captain_password
-      SPRING_PROFILES_ACTIVE: docker
+      SPRING_PROFILES_ACTIVE: docker  # Docker環境用のプロファイル
     depends_on:
       postgres:
-        condition: service_healthy
+        condition: service_healthy  # PostgreSQLが正常に起動してから開始
     networks:
       - fire-captain-network
     restart: unless-stopped
@@ -43,15 +55,17 @@ services:
       timeout: 10s
       retries: 3
 
+  # Angularフロントエンドサービス
+  # 消防司令システムのユーザーインターフェースを提供
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: fire-captain-frontend
     ports:
-      - "4200:80"
+      - "4200:80"  # ホストの4200ポートをコンテナの80ポートにマッピング
     depends_on:
-      - backend
+      - backend  # バックエンドが起動してから開始
     networks:
       - fire-captain-network
     restart: unless-stopped
@@ -61,15 +75,17 @@ services:
       timeout: 10s
       retries: 3
 
+  # Nginxリバースプロキシサービス
+  # フロントエンドとバックエンドのリクエストを適切に振り分け、SSL終端を担当
   nginx:
     image: nginx:alpine
     container_name: fire-captain-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"    # HTTPポート
+      - "443:443"  # HTTPSポート
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl
+      - ./nginx.conf:/etc/nginx/nginx.conf  # Nginx設定ファイル
+      - ./ssl:/etc/nginx/ssl                # SSL証明書
     depends_on:
       - backend
       - frontend
@@ -82,9 +98,11 @@ services:
       timeout: 10s
       retries: 3
 
+# 永続化ボリュームの定義
 volumes:
-  postgres_data:
+  postgres_data:  # PostgreSQLデータの永続化用ボリューム
 
+# Dockerネットワークの定義
 networks:
-  fire-captain-network:
+  fire-captain-network:  # サービス間通信用のブリッジネットワーク
     driver: bridge
