@@ -77,7 +77,8 @@ public class DispatchService {
     @Cacheable(value = "dispatches", key = "#dispatchNumber")
     public Optional<Dispatch> findByDispatchNumber(String dispatchNumber) {
         log.debug("Finding dispatch by number: {}", dispatchNumber);
-        return dispatchRepository.findByDispatchNumber(dispatchNumber);
+        Dispatch dispatch = dispatchRepository.findByDispatchNumber(dispatchNumber);
+        return Optional.ofNullable(dispatch);
     }
 
     /**
@@ -116,8 +117,10 @@ public class DispatchService {
     public Dispatch updateStatus(String dispatchNumber, Dispatch.DispatchStatus status) {
         log.info("Updating dispatch status: {} -> {}", dispatchNumber, status);
 
-        Dispatch dispatch = dispatchRepository.findByDispatchNumber(dispatchNumber)
-                .orElseThrow(() -> new RuntimeException("Dispatch not found: " + dispatchNumber));
+        Dispatch dispatch = dispatchRepository.findByDispatchNumber(dispatchNumber);
+        if (dispatch == null) {
+            throw new RuntimeException("Dispatch not found: " + dispatchNumber);
+        }
 
         dispatch.setStatus(status);
 
@@ -159,7 +162,9 @@ public class DispatchService {
             log.info("Assigning units to dispatch: {}", dispatch.getDispatchNumber());
 
             // 利用可能な部隊を検索
-            List<Unit> availableUnits = unitRepository.findAvailableUnitsByType(dispatch.getDispatchType());
+            // DispatchTypeをUnitTypeに変換する必要がある
+            Unit.UnitType unitType = convertDispatchTypeToUnitType(dispatch.getDispatchType());
+            List<Unit> availableUnits = unitRepository.findAvailableUnitsByType(unitType);
 
             // 優先度に基づいて部隊を選択
             List<Unit> selectedUnits = selectOptimalUnits(availableUnits, dispatch);
@@ -229,6 +234,20 @@ public class DispatchService {
         // 緊急度や状況に基づいて判定
         return dispatch.getPriorityLevel() == EmergencyReport.PriorityLevel.CRITICAL ||
                 dispatch.getPriorityLevel() == EmergencyReport.PriorityLevel.HIGH;
+    }
+
+    /**
+     * DispatchTypeをUnitTypeに変換
+     */
+    private Unit.UnitType convertDispatchTypeToUnitType(Dispatch.DispatchType dispatchType) {
+        return switch (dispatchType) {
+            case FIRE_ENGINE -> Unit.UnitType.FIRE_ENGINE;
+            case AMBULANCE -> Unit.UnitType.AMBULANCE;
+            case LADDER_TRUCK -> Unit.UnitType.LADDER_TRUCK;
+            case RESCUE_UNIT -> Unit.UnitType.RESCUE_VEHICLE;
+            case HAZMAT_UNIT -> Unit.UnitType.SPECIAL_UNIT;
+            case COMMAND_UNIT -> Unit.UnitType.COMMAND_VEHICLE;
+        };
     }
 
     /**

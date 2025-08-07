@@ -1,102 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 消防司令システム EhCache設定ファイル -->
+<!-- 
+  このファイルは消防司令システムのキャッシュ設定を定義します。
+  各データタイプに応じた最適なキャッシュ設定を行い、
+  パフォーマンス向上とメモリ使用量の最適化を実現します。
+  
+  @author FireCaptain Team
+  @version 1.0
+-->
 <config xmlns="http://www.ehcache.org/v3"
         xmlns:jsr107="http://www.ehcache.org/v3/jsr107">
 
-    <!-- Default cache configuration -->
+    <!-- デフォルトキャッシュ設定 -->
+    <!-- 他のキャッシュで明示的に設定されていない場合のデフォルト設定 -->
     <cache alias="default">
         <resources>
-            <heap unit="entries">1000</heap>
-            <offheap unit="MB">100</offheap>
+            <heap unit="entries">1000</heap>      <!-- ヒープエントリ数 -->
+            <offheap unit="MB">100</offheap>      <!-- オフヒープメモリサイズ -->
         </resources>
         <expiry>
-            <ttl unit="minutes">30</ttl>
+            <ttl unit="minutes">30</ttl>          <!-- 有効期限（30分） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">50</max-object-size>
+            <max-object-size unit="KB">50</max-object-size>  <!-- 最大オブジェクトサイズ -->
         </heap-store-settings>
     </cache>
 
-    <!-- Emergency Reports cache -->
+    <!-- 緊急通報キャッシュ -->
+    <!-- 緊急通報データの高速アクセス用キャッシュ -->
     <cache alias="emergencyReports">
         <resources>
-            <heap unit="entries">5000</heap>
-            <offheap unit="MB">200</offheap>
+            <heap unit="entries">5000</heap>      <!-- ヒープエントリ数（5000件） -->
+            <offheap unit="MB">200</offheap>      <!-- オフヒープメモリサイズ（200MB） -->
         </resources>
         <expiry>
-            <ttl unit="minutes">15</ttl>
+            <ttl unit="minutes">15</ttl>          <!-- 有効期限（15分） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">100</max-object-size>
+            <max-object-size unit="KB">100</max-object-size>  <!-- 最大オブジェクトサイズ（100KB） -->
         </heap-store-settings>
     </cache>
 
-    <!-- Dispatches cache -->
+    <!-- 出動指令キャッシュ -->
+    <!-- 出動指令データの高速アクセス用キャッシュ -->
     <cache alias="dispatches">
         <resources>
-            <heap unit="entries">3000</heap>
-            <offheap unit="MB">150</offheap>
+            <heap unit="entries">3000</heap>      <!-- ヒープエントリ数（3000件） -->
+            <offheap unit="MB">150</offheap>      <!-- オフヒープメモリサイズ（150MB） -->
         </resources>
         <expiry>
-            <ttl unit="minutes">10</ttl>
+            <ttl unit="minutes">10</ttl>          <!-- 有効期限（10分） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">80</max-object-size>
+            <max-object-size unit="KB">80</max-object-size>   <!-- 最大オブジェクトサイズ（80KB） -->
         </heap-store-settings>
     </cache>
 
-    <!-- Scene Supports cache -->
+    <!-- 現場支援キャッシュ -->
+    <!-- 現場支援データの高速アクセス用キャッシュ -->
     <cache alias="sceneSupports">
         <resources>
-            <heap unit="entries">2000</heap>
-            <offheap unit="MB">100</offheap>
+            <heap unit="entries">2000</heap>      <!-- ヒープエントリ数（2000件） -->
+            <offheap unit="MB">100</offheap>      <!-- オフヒープメモリサイズ（100MB） -->
         </resources>
         <expiry>
-            <ttl unit="minutes">20</ttl>
+            <ttl unit="minutes">20</ttl>          <!-- 有効期限（20分） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">60</max-object-size>
+            <max-object-size unit="KB">60</max-object-size>   <!-- 最大オブジェクトサイズ（60KB） -->
         </heap-store-settings>
     </cache>
 
-    <!-- Data Analyses cache -->
+    <!-- データ分析キャッシュ -->
+    <!-- データ分析結果の高速アクセス用キャッシュ -->
     <cache alias="dataAnalyses">
         <resources>
-            <heap unit="entries">1000</heap>
-            <offheap unit="MB">50</offheap>
+            <heap unit="entries">1000</heap>      <!-- ヒープエントリ数（1000件） -->
+            <offheap unit="MB">50</offheap>       <!-- オフヒープメモリサイズ（50MB） -->
         </resources>
         <expiry>
-            <ttl unit="hours">2</ttl>
+            <ttl unit="hours">2</ttl>             <!-- 有効期限（2時間） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">200</max-object-size>
+            <max-object-size unit="KB">200</max-object-size>  <!-- 最大オブジェクトサイズ（200KB） -->
         </heap-store-settings>
     </cache>
 
-    <!-- Statistics cache -->
+    <!-- 統計情報キャッシュ -->
+    <!-- 統計情報の高速アクセス用キャッシュ -->
     <cache alias="statistics">
         <resources>
-            <heap unit="entries">100</heap>
-            <offheap unit="MB">20</offheap>
+            <heap unit="entries">100</heap>       <!-- ヒープエントリ数（100件） -->
+            <offheap unit="MB">20</offheap>       <!-- オフヒープメモリサイズ（20MB） -->
         </resources>
         <expiry>
-            <ttl unit="minutes">5</ttl>
+            <ttl unit="minutes">5</ttl>           <!-- 有効期限（5分） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">10</max-object-size>
+            <max-object-size unit="KB">10</max-object-size>   <!-- 最大オブジェクトサイズ（10KB） -->
         </heap-store-settings>
     </cache>
 
-    <!-- User sessions cache -->
+    <!-- ユーザーセッションキャッシュ -->
+    <!-- ユーザーセッション情報の高速アクセス用キャッシュ -->
     <cache alias="userSessions">
         <resources>
-            <heap unit="entries">10000</heap>
-            <offheap unit="MB">500</offheap>
+            <heap unit="entries">10000</heap>     <!-- ヒープエントリ数（10000件） -->
+            <offheap unit="MB">500</offheap>      <!-- オフヒープメモリサイズ（500MB） -->
         </resources>
         <expiry>
-            <ttl unit="hours">1</ttl>
+            <ttl unit="hours">1</ttl>             <!-- 有効期限（1時間） -->
         </expiry>
         <heap-store-settings>
-            <max-object-size unit="KB">5</max-object-size>
+            <max-object-size unit="KB">5</max-object-size>    <!-- 最大オブジェクトサイズ（5KB） -->
         </heap-store-settings>
     </cache>
 

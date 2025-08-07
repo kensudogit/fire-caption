@@ -6,8 +6,8 @@ WORKDIR /app
 # package.jsonとpackage-lock.jsonをコピー
 COPY package*.json ./
 
-# 依存関係をインストール（package-lock.jsonがない場合はnpm installを使用）
-RUN if [ -f package-lock.json ]; then npm ci --only=production; else npm install --only=production; fi
+# すべての依存関係をインストール（ビルドにdevDependenciesが必要）
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
 # ソースコードをコピー
 COPY . .

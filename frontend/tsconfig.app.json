@@ -1,0 +1,22 @@
+/**
+ * Angularアプリケーション用TypeScript設定ファイル
+ *
+ * アプリケーション固有のTypeScriptコンパイラ設定を定義します。
+ * メインのtsconfig.jsonを拡張し、アプリケーション専用の設定を追加します。
+ *
+ * @author FireCaptain Team
+ * @version 1.0
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": []
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}

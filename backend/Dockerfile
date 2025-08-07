@@ -19,7 +19,7 @@ RUN ./gradlew dependencies
 RUN ./gradlew build -x test
 
 # JARファイルを実行用ディレクトリにコピー
-RUN cp build/libs/*.jar app.jar
+RUN ls -la build/libs/ && cp build/libs/fire-captain-backend-0.0.1-SNAPSHOT.jar app.jar
 
 # ポート8080を公開
 EXPOSE 8080

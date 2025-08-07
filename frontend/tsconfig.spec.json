@@ -1,0 +1,22 @@
+/**
+ * テスト用TypeScript設定ファイル
+ *
+ * テスト実行時のTypeScriptコンパイラ設定を定義します。
+ * テスト環境に特化した設定を含みます。
+ *
+ * @author FireCaptain Team
+ * @version 1.0
+ */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": [
+      "jasmine"
+    ]
+  },
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts"
+  ]
+}

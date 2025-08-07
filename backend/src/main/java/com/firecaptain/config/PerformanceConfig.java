@@ -11,8 +11,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.core.task.AsyncTaskExecutor;
 
-import javax.cache.CacheManager;
+// import javax.cache.CacheManager;
 import javax.cache.Caching;
 import java.util.concurrent.Executor;
 
@@ -27,8 +28,8 @@ public class PerformanceConfig implements WebMvcConfigurer {
      */
     @Bean
     @Primary
-    public CacheManager cacheManager() {
-        JCacheManager jCacheManager = Caching.getCachingProvider().getCacheManager();
+    public org.springframework.cache.CacheManager cacheManager() {
+        javax.cache.CacheManager jCacheManager = Caching.getCachingProvider().getCacheManager();
         return new JCacheCacheManager(jCacheManager);
     }
 
@@ -36,7 +37,7 @@ public class PerformanceConfig implements WebMvcConfigurer {
      * 非同期処理用のExecutor
      */
     @Bean(name = "asyncExecutor")
-    public Executor asyncExecutor() {
+    public AsyncTaskExecutor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(16);
         executor.setMaxPoolSize(32);

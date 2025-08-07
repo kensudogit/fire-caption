@@ -1,101 +1,118 @@
+# 消防司令システム Spring Boot アプリケーション設定ファイル
+# 
+# このファイルは消防司令システムのバックエンドアプリケーションの
+# 設定を定義します。データベース接続、JPA設定、キャッシュ設定、
+# セキュリティ設定、WebSocket設定などが含まれます。
+# 
+# @author FireCaptain Team
+# @version 1.0
+
 spring:
   application:
-    name: fire-captain-system
+    name: fire-captain-system  # アプリケーション名
   
+  # データベース接続設定
   datasource:
-    url: jdbc:postgresql://localhost:5432/fire_captain_db
-    username: fire_captain_user
-    password: fire_captain_password
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/fire_captain_db  # PostgreSQL接続URL
+    username: fire_captain_user                            # データベースユーザー名
+    password: fire_captain_password                        # データベースパスワード
+    driver-class-name: org.postgresql.Driver               # PostgreSQLドライバー
     hikari:
-      maximum-pool-size: 50
-      minimum-idle: 10
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
-      leak-detection-threshold: 30000
-      connection-test-query: SELECT 1
-      validation-timeout: 5000
-      register-mbeans: true
+      maximum-pool-size: 50        # 最大コネクションプールサイズ
+      minimum-idle: 10             # 最小アイドル接続数
+      connection-timeout: 20000    # 接続タイムアウト（20秒）
+      idle-timeout: 300000         # アイドルタイムアウト（5分）
+      max-lifetime: 1200000        # 最大ライフタイム（20分）
+      leak-detection-threshold: 30000  # リーク検出閾値（30秒）
+      connection-test-query: SELECT 1  # 接続テストクエリ
+      validation-timeout: 5000     # 検証タイムアウト（5秒）
+      register-mbeans: true        # JMX監視を有効化
   
+  # JPA設定
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: false
-    open-in-view: false
+      ddl-auto: update            # DDL自動更新（開発時のみ）
+    show-sql: false               # SQLログ出力を無効化
+    open-in-view: false           # OSIVを無効化（パフォーマンス向上）
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect  # PostgreSQL方言
+        format_sql: false         # SQLフォーマットを無効化
         jdbc:
-          batch_size: 100
-          batch_versioned_data: true
-          batch.builder: legacy
-        order_inserts: true
-        order_updates: true
+          batch_size: 100         # バッチサイズ
+          batch_versioned_data: true  # バージョン付きデータのバッチ処理
+          batch.builder: legacy   # レガシーバッチビルダー
+        order_inserts: true       # 挿入の順序付け
+        order_updates: true       # 更新の順序付け
         connection:
-          provider_disables_autocommit: true
+          provider_disables_autocommit: true  # 自動コミット無効化
         cache:
-          use_second_level_cache: true
-          use_query_cache: true
+          use_second_level_cache: true    # セカンドレベルキャッシュ有効化
+          use_query_cache: true           # クエリキャッシュ有効化
           region:
-            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory  # JCacheファクトリ
         jcache:
-          provider: org.ehcache.jsr107.EhcacheCachingProvider
-          uri: classpath:ehcache.xml
+          provider: org.ehcache.jsr107.EhcacheCachingProvider  # EhCacheプロバイダー
+          uri: classpath:ehcache.xml     # EhCache設定ファイル
         statistics:
-          enabled: true
-          generate_statistics: true
-        generate_statistics: true
+          enabled: true                   # 統計情報を有効化
+          generate_statistics: true       # 統計情報生成を有効化
+        generate_statistics: true         # 統計情報生成を有効化
   
+  # キャッシュ設定
   cache:
-    type: jcache
+    type: jcache                 # JCacheを使用
     jcache:
-      config: classpath:ehcache.xml
+      config: classpath:ehcache.xml  # EhCache設定ファイル
   
+  # Redis設定（セッション管理・キャッシュ用）
   redis:
-    host: localhost
-    port: 6379
-    timeout: 2000ms
+    host: localhost              # Redisホスト
+    port: 6379                   # Redisポート
+    timeout: 2000ms              # 接続タイムアウト
     lettuce:
       pool:
-        max-active: 20
-        max-idle: 10
-        min-idle: 5
-        max-wait: 1000ms
+        max-active: 20           # 最大アクティブ接続数
+        max-idle: 10             # 最大アイドル接続数
+        min-idle: 5              # 最小アイドル接続数
+        max-wait: 1000ms         # 最大待機時間
   
+  # セキュリティ設定
   security:
     jwt:
-      secret: fire_captain_jwt_secret_key_2024_very_long_and_secure_key_for_production
-      expiration: 86400000 # 24 hours
+      secret: fire_captain_jwt_secret_key_2024_very_long_and_secure_key_for_production  # JWT秘密鍵
+      expiration: 86400000       # JWT有効期限（24時間）
   
+  # WebSocket設定
   websocket:
-    allowed-origins: "http://localhost:4200"
+    allowed-origins: "http://localhost:4200"  # 許可するオリジン（フロントエンド）
 
+# サーバー設定
 server:
-  port: 8080
+  port: 8080                     # サーバーポート
   compression:
-    enabled: true
-    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
-    min-response-size: 512
+    enabled: true                # 圧縮を有効化
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml  # 圧縮対象MIMEタイプ
+    min-response-size: 512       # 最小圧縮サイズ
   tomcat:
     threads:
-      max: 200
-      min-spare: 10
-    max-connections: 8192
-    accept-count: 100
-    connection-timeout: 20000
-    max-http-form-post-size: 2MB
-    max-swallow-size: 2MB
+      max: 200                   # 最大スレッド数
+      min-spare: 10              # 最小スレッド数
+    max-connections: 8192        # 最大接続数
+    accept-count: 100            # 受け入れ待ち数
+    connection-timeout: 20000    # 接続タイムアウト
+    max-http-form-post-size: 2MB # 最大POSTサイズ
+    max-swallow-size: 2MB        # 最大スワローサイズ
 
+# 監視・管理設定
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus,env,configprops
+        include: health,info,metrics,prometheus,env,configprops  # 公開するエンドポイント
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: when-authorized  # ヘルス詳細表示（認証時のみ）
   metrics:
     export:
       prometheus:

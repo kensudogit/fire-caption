@@ -96,11 +96,14 @@ public class CompletionReport {
     @Column(name = "reviewed_at")
     private LocalDateTime reviewedAt;
 
-    @OneToMany(mappedBy = "completionReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CompletionAttachment> attachments;
+    // 添付ファイルと署名は後で実装
+    // @OneToMany(mappedBy = "completionReport", cascade = CascadeType.ALL, fetch =
+    // FetchType.LAZY)
+    // private List<CompletionAttachment> attachments;
 
-    @OneToMany(mappedBy = "completionReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CompletionSignature> signatures;
+    // @OneToMany(mappedBy = "completionReport", cascade = CascadeType.ALL, fetch =
+    // FetchType.LAZY)
+    // private List<CompletionSignature> signatures;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

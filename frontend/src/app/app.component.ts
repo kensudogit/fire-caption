@@ -50,4 +50,14 @@ export class AppComponent implements OnInit {
       this.webSocketService.connect();
     }
   }
+
+  /**
+   * ログアウト処理
+   * 
+   * ユーザーのログアウトを実行し、WebSocket接続を切断します。
+   */
+  logout() {
+    this.authService.logout();
+    this.webSocketService.disconnect();
+  }
 }

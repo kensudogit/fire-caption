@@ -52,6 +52,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }]
   };
 
+  /** チャートのオプション設定 */
+  chartOptions: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom'
+      }
+    }
+  };
+
   /**
    * コンストラクタ
    * 
